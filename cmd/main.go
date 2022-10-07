@@ -34,8 +34,28 @@ func PrettyPrint(i interface{}) string {
 
 func GetOwnedGames(token string, steamid string) map[string]interface{} {
 	// do api request to steam
-	var c = &http.Client{Timeout: 10 * time.Second}
+	c := &http.Client{Timeout: 10 * time.Second}
 	r, err := c.Get("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + token + "&steamid=" + steamid + "&format=json")
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	defer r.Body.Close()
+
+	// print out the body
+	bodyBytes, err := io.ReadAll(r.Body)
+	fmt.Println(len(string(bodyBytes)))
+
+	// decode the response
+	var result map[string]interface{}
+	json.Unmarshal(bodyBytes, &result)
+	return result
+}
+
+func GetAppList() map[string]interface{} {
+	c := &http.Client{Timeout: 10 * time.Second}
+	r, err := c.Get("http://api.steampowered.com/ISteamApps/GetAppList/v2/")
+	// do api request to steam
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
@@ -58,4 +78,6 @@ func main() {
 	flag.Parse()
 	games := GetOwnedGames(*token, *steamid)
 	fmt.Println(PrettyPrint(games))
+	fmt.Println(GetAppList())
+
 }
