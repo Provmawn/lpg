@@ -10,22 +10,20 @@ import (
 	"time"
 )
 
-/* none of this works
-type Response struct {
-	GamesCount int    `json:"games_count"`
-	Games      []Game `json:"games"`
+type Games struct {
+	Response struct {
+		GameCount int `json:"game_count"`
+		Games     []struct {
+			Appid                  int `json:"appid"`
+			PlaytimeForever        int `json:"playtime_forever"`
+			PlaytimeWindowsForever int `json:"playtime_windows_forever"`
+			PlaytimeMacForever     int `json:"playtime_mac_forever"`
+			PlaytimeLinuxForever   int `json:"playtime_linux_forever"`
+			RtimeLastPlayed        int `json:"rtime_last_played"`
+			Playtime2Weeks         int `json:"playtime_2weeks,omitempty"`
+		} `json:"games"`
+	} `json:"response"`
 }
-
-type Game struct {
-	AppId                  int `json:"appid"`
-	PlaytimeForever        int `json:"playtime_forever"`
-	PlaytimeWindowsForever int `json:"playtime_windows_forever"`
-	PlaytimeMacForever     int `json:"playtime_mac_forever"`
-	PlaytimeLinuxForever   int `json:"playtime_linux_forever"`
-	RTimeLastPlayed        int `json:"rtime_last_played"`
-}
-
-*/
 
 func PrettyPrint(i interface{}) string {
 	s, _ := json.MarshalIndent(i, "", "  ")
@@ -47,7 +45,7 @@ func GetOwnedGames(token string, steamid string) map[string]interface{} {
 	fmt.Println(len(string(bodyBytes)))
 
 	// decode the response
-	var result map[string]interface{}
+	var result Games
 	json.Unmarshal(bodyBytes, &result)
 	return result
 }
